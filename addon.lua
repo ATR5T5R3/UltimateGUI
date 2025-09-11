@@ -1,4 +1,4 @@
--- الخدمات
+-- // الخدمات
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
@@ -6,129 +6,129 @@ local HttpService = game:GetService("HttpService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
 
 -------------------------
--- واجهة 1: السرعة والطيران
-local speedGui = Instance.new("ScreenGui", player.PlayerGui)
-speedGui.ResetOnSpawn = false
+-- واجهة 1: N60 Hub (invis + God Mode + ESP)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "N60Hub"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local speedFrame = Instance.new("Frame", speedGui)
-speedFrame.Size = UDim2.new(0,180,0,140)
-speedFrame.Position = UDim2.new(0.3,0,0.5,-70)
-speedFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
-speedFrame.BorderColor3 = Color3.fromRGB(255,0,0)
-speedFrame.BorderSizePixel = 2
-speedFrame.Active = true
-speedFrame.Draggable = true
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 160, 0, 90)
+frame.Position = UDim2.new(0.05, 0, 0.2, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.BorderColor3 = Color3.fromRGB(255,0,0)
+frame.BorderSizePixel = 3
+frame.Active = true
+frame.Draggable = true
 
-local speedTitle = Instance.new("TextLabel", speedFrame)
-speedTitle.Size = UDim2.new(1,0,0,25)
-speedTitle.Position = UDim2.new(0,0,0,0)
-speedTitle.BackgroundColor3 = Color3.fromRGB(30,30,30)
-speedTitle.Text = "N60 Hub"
-speedTitle.TextColor3 = Color3.fromRGB(255,0,0)
-speedTitle.Font = Enum.Font.SourceSansBold
-speedTitle.TextScaled = true
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0,25)
+title.BackgroundTransparency = 1
+title.Text = "N60 Hub"
+title.TextColor3 = Color3.fromRGB(255,0,0)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 20
 
--- السرعة المشفرة
-local secretKey = 77
-local encodedSpeed = bit32.bxor(15, secretKey)
+local button = Instance.new("TextButton", frame)
+button.Size = UDim2.new(0.8,0,0,30)
+button.Position = UDim2.new(0.1,0,0.5,0)
+button.BackgroundColor3 = Color3.fromRGB(30,30,30)
+button.Text = "invis"
+button.TextColor3 = Color3.fromRGB(255,0,0)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 18
 
-local function getSpeed() return bit32.bxor(encodedSpeed, secretKey) end
-local function setSpeed(val) encodedSpeed = bit32.bxor(val, secretKey) end
-
--- عرض الرقم
-local speedLabel = Instance.new("TextLabel", speedFrame)
-speedLabel.Size = UDim2.new(0.6,0,0,30)
-speedLabel.Position = UDim2.new(0.2,0,0.25,0)
-speedLabel.Text = tostring(getSpeed())
-speedLabel.Font = Enum.Font.SourceSansBold
-speedLabel.TextScaled = true
-speedLabel.TextColor3 = Color3.fromRGB(255,255,255)
-speedLabel.BackgroundColor3 = Color3.fromRGB(50,50,50)
-
--- أزرار + و -
-local plusBtn = Instance.new("TextButton", speedFrame)
-plusBtn.Size = UDim2.new(0.2,0,0,30)
-plusBtn.Position = UDim2.new(0.8,0,0.25,0)
-plusBtn.Text = "+"
-plusBtn.Font = Enum.Font.SourceSansBold
-plusBtn.TextScaled = true
-plusBtn.TextColor3 = Color3.fromRGB(255,255,255)
-plusBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
-plusBtn.MouseButton1Click:Connect(function()
-    local spd = getSpeed()
-    if spd < 35 then
-        setSpeed(spd + 1)
-        speedLabel.Text = tostring(getSpeed())
+-- // منطق الزر
+local fakePart
+local function moveSmooth(targetPos)
+    local steps = 20
+    for i = 1, steps do
+        hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(targetPos), i/steps)
+        task.wait(0.03)
     end
+end
+
+button.MouseButton1Click:Connect(function()
+    character = player.Character or player.CharacterAdded:Wait()
+    hrp = character:WaitForChild("HumanoidRootPart")
+    humanoid = character:WaitForChild("Humanoid")
+
+    local newPos = hrp.Position + Vector3.new(0, 10, 0)
+
+    if fakePart then fakePart:Destroy() end
+
+    fakePart = Instance.new("Part")
+    fakePart.Size = Vector3.new(6,1,6)
+    fakePart.Anchored = true
+    fakePart.CanCollide = true
+    fakePart.Transparency = 0.5
+    fakePart.Color = Color3.fromRGB(255,0,0)
+    fakePart.Name = "InvisPart"
+    fakePart.Parent = workspace
+
+    fakePart.CFrame = CFrame.new(newPos - Vector3.new(0, hrp.Size.Y/2, 0))
+    moveSmooth(newPos + Vector3.new(0,2,0))
 end)
 
-local minusBtn = Instance.new("TextButton", speedFrame)
-minusBtn.Size = UDim2.new(0.2,0,0,30)
-minusBtn.Position = UDim2.new(0,0,0.25,0)
-minusBtn.Text = "-"
-minusBtn.Font = Enum.Font.SourceSansBold
-minusBtn.TextScaled = true
-minusBtn.TextColor3 = Color3.fromRGB(255,255,255)
-minusBtn.BackgroundColor3 = Color3.fromRGB(170,0,0)
-minusBtn.MouseButton1Click:Connect(function()
-    local spd = getSpeed()
-    if spd > 10 then
-        setSpeed(spd - 1)
-        speedLabel.Text = tostring(getSpeed())
-    end
+-- // God Mode تلقائي
+local function enableGodMode()
+    character = player.Character or player.CharacterAdded:Wait()
+    humanoid = character:WaitForChild("Humanoid")
+    humanoid.Health = humanoid.MaxHealth
+    humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+        if humanoid.Health < humanoid.MaxHealth then
+            humanoid.Health = humanoid.MaxHealth
+        end
+    end)
+end
+
+enableGodMode()
+player.CharacterAdded:Connect(function(char)
+    character = char
+    hrp = char:WaitForChild("HumanoidRootPart")
+    humanoid = char:WaitForChild("Humanoid")
+    enableGodMode()
 end)
 
--- زر Vfly
-local flyBtn = Instance.new("TextButton", speedFrame)
-flyBtn.Size = UDim2.new(0.8,0,0,35)
-flyBtn.Position = UDim2.new(0.1,0,0.65,0)
-flyBtn.Text = "تشغيل الطيران"
-flyBtn.Font = Enum.Font.SourceSansBold
-flyBtn.TextScaled = true
-flyBtn.TextColor3 = Color3.fromRGB(255,255,255)
-flyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
+-- // ESP للاعبين
+local function createESP(targetPlayer)
+    if targetPlayer == player then return end
+    local targetChar = targetPlayer.Character
+    if not targetChar then return end
+    local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+    if not targetHRP then return end
 
-local flyEnabled = false
-local flyConn
+    local box = Instance.new("BoxHandleAdornment")
+    box.Adornee = targetHRP
+    box.Color3 = Color3.fromRGB(255,0,0)
+    box.Size = Vector3.new(2,3,1)
+    box.AlwaysOnTop = true
+    box.ZIndex = 10
+    box.Parent = targetHRP
+end
 
-flyBtn.MouseButton1Click:Connect(function()
-    flyEnabled = not flyEnabled
-    if flyEnabled then
-        flyBtn.Text = "إيقاف الطيران"
-        flyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
-        flyConn = RunService.RenderStepped:Connect(function()
-            if hrp then
-                local cam = workspace.CurrentCamera
-                local baseSpeed = getSpeed()
-                local now = tick()
-                local cycleTime = now % 1.25
-                local currentSpeed = baseSpeed
-                if cycleTime < 0.11 then  -- تم تعديل المدة هنا
-                    currentSpeed = 37 -- تم تعديل السرعة هنا
-                end
-                hrp.Velocity = cam.CFrame.LookVector * currentSpeed
-            end
-        end)
-    else
-        flyBtn.Text = "تشغيل الطيران"
-        flyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
-        if flyConn then flyConn:Disconnect() end
-        if hrp then hrp.Velocity = Vector3.new(0,0,0) end
-    end
+for _, p in pairs(Players:GetPlayers()) do
+    createESP(p)
+end
+
+Players.PlayerAdded:Connect(function(p)
+    p.CharacterAdded:Connect(function()
+        createESP(p)
+    end)
 end)
 
 -------------------------
--- واجهة 2: مضاد ضرب + تغيير السيرفر
+-- واجهة 2: Anti Hub (مضاد ضرب 145 + تغيير السيرفر)
 local antiGui = Instance.new("ScreenGui", player.PlayerGui)
 antiGui.ResetOnSpawn = false
 
 local antiFrame = Instance.new("Frame", antiGui)
-antiFrame.Size = UDim2.new(0,200,0,140)
-antiFrame.Position = UDim2.new(0.7,0,0.5,-70)
+antiFrame.Size = UDim2.new(0,160,0,120)
+antiFrame.Position = UDim2.new(0.7,0,0.5,-60)
 antiFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 antiFrame.BorderColor3 = Color3.fromRGB(255,0,0)
 antiFrame.BorderSizePixel = 2
@@ -136,7 +136,7 @@ antiFrame.Active = true
 antiFrame.Draggable = true
 
 local antiTitle = Instance.new("TextLabel", antiFrame)
-antiTitle.Size = UDim2.new(1,0,0,25)
+antiTitle.Size = UDim2.new(1,0,0,20)
 antiTitle.Position = UDim2.new(0,0,0,0)
 antiTitle.BackgroundColor3 = Color3.fromRGB(30,30,30)
 antiTitle.Text = "N60 Hub"
@@ -146,31 +146,31 @@ antiTitle.TextScaled = true
 
 -- زر مضاد ضرب
 local vflyBtn = Instance.new("TextButton", antiFrame)
-vflyBtn.Size = UDim2.new(0.8,0,0,40)
+vflyBtn.Size = UDim2.new(0.8,0,0,30)
 vflyBtn.Position = UDim2.new(0.1,0,0.25,0)
-vflyBtn.Text = "تشغيل مضاد ضرب (100)"
+vflyBtn.Text = "تشغيل مضاد ضرب (145)"
 vflyBtn.Font = Enum.Font.SourceSansBold
 vflyBtn.TextScaled = true
 vflyBtn.TextColor3 = Color3.fromRGB(255,255,255)
 vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
 
 local vflyEnabled = false
-local vflySpeed = 100
+local vflySpeed = 37       -- سرعة طبيعية لتجنب حماية الماب
 
 vflyBtn.MouseButton1Click:Connect(function()
     vflyEnabled = not vflyEnabled
     if vflyEnabled then
-        vflyBtn.Text = "إيقاف مضاد ضرب (100)"
+        vflyBtn.Text = "إيقاف مضاد ضرب (145)"
         vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
     else
-        vflyBtn.Text = "تشغيل مضاد ضرب (100)"
+        vflyBtn.Text = "تشغيل مضاد ضرب (145)"
         vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
     end
 end)
 
 -- زر تغيير السيرفر
 local serverBtn = Instance.new("TextButton", antiFrame)
-serverBtn.Size = UDim2.new(0.8,0,0,40)
+serverBtn.Size = UDim2.new(0.8,0,0,30)
 serverBtn.Position = UDim2.new(0.1,0,0.65,0)
 serverBtn.Text = "تغيير سيرفر"
 serverBtn.Font = Enum.Font.SourceSansBold
@@ -195,10 +195,40 @@ serverBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Heartbeat لمضاد ضرب
-RunService.Heartbeat:Connect(function()
+-- Heartbeat لمضاد ضرب: صعود طبيعي، توقف 0.33 ثانية، نزول طبيعي
+local hoverHeight = 16       -- ارتفاع الصعود
+local hoverTime = 0.59       -- توقف في الأعلى
+local riseSpeed = 37         -- سرعة الصعود
+local fallSpeed = 37         -- سرعة النزول
+
+local ascending = true
+local startY = hrp.Position.Y
+local targetY = startY + hoverHeight
+local hoverStart = 0
+
+RunService.Heartbeat:Connect(function(dt)
     if character and hrp and vflyEnabled then
-        hrp.CFrame = hrp.CFrame + Vector3.new(0, vflySpeed/100, 0)
+        local pos = hrp.Position
+        if ascending then
+            local newY = math.min(pos.Y + riseSpeed * dt, targetY)
+            hrp.CFrame = CFrame.new(pos.X, newY, pos.Z)
+            if newY >= targetY - 0.1 then
+                ascending = false
+                hoverStart = tick()
+            end
+        else
+            if tick() - hoverStart < hoverTime then
+                hrp.CFrame = CFrame.new(pos.X, targetY, pos.Z)
+            else
+                local newY = math.max(pos.Y - fallSpeed * dt, startY)
+                hrp.CFrame = CFrame.new(pos.X, newY, pos.Z)
+                if newY <= startY + 0.1 then
+                    ascending = true
+                    startY = hrp.Position.Y
+                    targetY = startY + hoverHeight
+                end
+            end
+        end
     end
 end)
 
