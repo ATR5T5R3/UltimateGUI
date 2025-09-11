@@ -18,7 +18,7 @@ screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 160, 0, 90)
-frame.Position = UDim2.new(0.05, 0, 0.2, 0)
+frame.Position = UDim2.new(0.05,0,0.2,0)
 frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 frame.BorderColor3 = Color3.fromRGB(255,0,0)
 frame.BorderSizePixel = 3
@@ -57,7 +57,7 @@ button.MouseButton1Click:Connect(function()
     hrp = character:WaitForChild("HumanoidRootPart")
     humanoid = character:WaitForChild("Humanoid")
 
-    local newPos = hrp.Position + Vector3.new(0, 10, 0)
+    local newPos = hrp.Position + Vector3.new(0,10,0)
 
     if fakePart then fakePart:Destroy() end
 
@@ -122,7 +122,7 @@ Players.PlayerAdded:Connect(function(p)
 end)
 
 -------------------------
--- واجهة 2: Anti Hub (مضاد ضرب 145 + تغيير السيرفر)
+-- واجهة 2: Anti Hub (مضاد ضرب + تغيير السيرفر)
 local antiGui = Instance.new("ScreenGui", player.PlayerGui)
 antiGui.ResetOnSpawn = false
 
@@ -148,22 +148,21 @@ antiTitle.TextScaled = true
 local vflyBtn = Instance.new("TextButton", antiFrame)
 vflyBtn.Size = UDim2.new(0.8,0,0,30)
 vflyBtn.Position = UDim2.new(0.1,0,0.25,0)
-vflyBtn.Text = "تشغيل مضاد ضرب "
+vflyBtn.Text = "مضاد ضرب"
 vflyBtn.Font = Enum.Font.SourceSansBold
 vflyBtn.TextScaled = true
 vflyBtn.TextColor3 = Color3.fromRGB(255,255,255)
 vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
 
 local vflyEnabled = false
-local vflySpeed = 37       -- سرعة طبيعية لتجنب حماية الماب
+local vflySpeed = 37
 
 vflyBtn.MouseButton1Click:Connect(function()
     vflyEnabled = not vflyEnabled
+    -- الاسم ثابت، لا تغيير عند التفعيل/الإيقاف
     if vflyEnabled then
-        vflyBtn.Text = "إيقاف مضاد ضرب (145)"
         vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
     else
-        vflyBtn.Text = "تشغيل مضاد ضرب (145)"
         vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
     end
 end)
@@ -195,11 +194,11 @@ serverBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Heartbeat لمضاد ضرب: صعود طبيعي، توقف 0.33 ثانية، نزول طبيعي
-local hoverHeight = 16       -- ارتفاع الصعود
-local hoverTime = 0.59       -- توقف في الأعلى
-local riseSpeed = 37         -- سرعة الصعود
-local fallSpeed = 37         -- سرعة النزول
+-- Heartbeat لمضاد ضرب
+local hoverHeight = 16
+local hoverTime = 0.59
+local riseSpeed = 37
+local fallSpeed = 41   -- سرعة الهبوط أسرع
 
 local ascending = true
 local startY = hrp.Position.Y
@@ -210,19 +209,19 @@ RunService.Heartbeat:Connect(function(dt)
     if character and hrp and vflyEnabled then
         local pos = hrp.Position
         if ascending then
-            local newY = math.min(pos.Y + riseSpeed * dt, targetY)
-            hrp.CFrame = CFrame.new(pos.X, newY, pos.Z)
-            if newY >= targetY - 0.1 then
+            local newY = math.min(pos.Y + riseSpeed*dt, targetY)
+            hrp.CFrame = CFrame.new(pos.X,newY,pos.Z)
+            if newY >= targetY-0.1 then
                 ascending = false
                 hoverStart = tick()
             end
         else
             if tick() - hoverStart < hoverTime then
-                hrp.CFrame = CFrame.new(pos.X, targetY, pos.Z)
+                hrp.CFrame = CFrame.new(pos.X,targetY,pos.Z)
             else
-                local newY = math.max(pos.Y - fallSpeed * dt, startY)
-                hrp.CFrame = CFrame.new(pos.X, newY, pos.Z)
-                if newY <= startY + 0.1 then
+                local newY = math.max(pos.Y - fallSpeed*dt, startY)
+                hrp.CFrame = CFrame.new(pos.X,newY,pos.Z)
+                if newY <= startY+0.1 then
                     ascending = true
                     startY = hrp.Position.Y
                     targetY = startY + hoverHeight
