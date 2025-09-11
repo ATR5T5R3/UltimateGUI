@@ -196,7 +196,7 @@ end)
 
 -- Heartbeat لمضاد ضرب
 local hoverHeight = 16
-local hoverTime = 0.59
+local hoverTime = 0.57
 local riseSpeed = 37
 local fallSpeed = 41   -- سرعة الهبوط أسرع
 
