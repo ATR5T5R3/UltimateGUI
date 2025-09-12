@@ -10,7 +10,7 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
 -------------------------
--- واجهة 1: N60 Hub (invis + God Mode + ESP)
+-- واجهة 1: N60 Hub (Flip + Sit Toggle + God Mode + ESP)
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "N60Hub"
 screenGui.ResetOnSpawn = false
@@ -33,45 +33,38 @@ title.TextColor3 = Color3.fromRGB(255,0,0)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 20
 
-local button = Instance.new("TextButton", frame)
-button.Size = UDim2.new(0.8,0,0,30)
-button.Position = UDim2.new(0.1,0,0.5,0)
-button.BackgroundColor3 = Color3.fromRGB(30,30,30)
-button.Text = "invis"
-button.TextColor3 = Color3.fromRGB(255,0,0)
-button.Font = Enum.Font.SourceSansBold
-button.TextSize = 18
+-- زر اختفاء (Flip + Sit Toggle)
+local hideBtn = Instance.new("TextButton", frame)
+hideBtn.Size = UDim2.new(0.8,0,0,30)
+hideBtn.Position = UDim2.new(0.1,0,0.5,0)
+hideBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+hideBtn.Text = "اختفاء"
+hideBtn.TextColor3 = Color3.fromRGB(255,255,255)
+hideBtn.Font = Enum.Font.SourceSansBold
+hideBtn.TextSize = 18
 
--- // منطق invis
-local fakePart
-local function moveSmooth(targetPos)
-    local steps = 20
-    for i = 1, steps do
-        hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(targetPos), i/steps)
-        task.wait(0.03)
+local hidden = false
+local originalCFrame
+
+hideBtn.MouseButton1Click:Connect(function()
+    if not hrp or not humanoid then return end
+
+    if not hidden then
+        originalCFrame = hrp.CFrame
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(math.rad(180),0,0) * CFrame.new(0,-5,0)
+        humanoid.Sit = true
+        hidden = true
+        hideBtn.Text = "إلغاء الاختفاء"
+    else
+        if originalCFrame then
+            hrp.CFrame = originalCFrame
+        else
+            hrp.CFrame = hrp.CFrame * CFrame.Angles(math.rad(-180),0,0)
+        end
+        humanoid.Sit = false
+        hidden = false
+        hideBtn.Text = "اختفاء"
     end
-end
-
-button.MouseButton1Click:Connect(function()
-    character = player.Character or player.CharacterAdded:Wait()
-    hrp = character:WaitForChild("HumanoidRootPart")
-    humanoid = character:WaitForChild("Humanoid")
-
-    local newPos = hrp.Position + Vector3.new(0,10,0)
-
-    if fakePart then fakePart:Destroy() end
-
-    fakePart = Instance.new("Part")
-    fakePart.Size = Vector3.new(6,1,6)
-    fakePart.Anchored = true
-    fakePart.CanCollide = true
-    fakePart.Transparency = 0.5
-    fakePart.Color = Color3.fromRGB(255,0,0)
-    fakePart.Name = "InvisPart"
-    fakePart.Parent = workspace
-
-    fakePart.CFrame = CFrame.new(newPos - Vector3.new(0, hrp.Size.Y/2, 0))
-    moveSmooth(newPos + Vector3.new(0,2,0))
 end)
 
 -- // God Mode تلقائي
