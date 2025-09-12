@@ -10,7 +10,7 @@ local hrp = character:WaitForChild("HumanoidRootPart")
 local humanoid = character:WaitForChild("Humanoid")
 
 -------------------------
--- واجهة 1: N60 Hub (Flip + Sit Toggle + God Mode + ESP)
+-- واجهة 1: N60 Hub (Flip + Sit Toggle + God Mode + ESP + Rainbow)
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "N60Hub"
 screenGui.ResetOnSpawn = false
@@ -87,21 +87,49 @@ player.CharacterAdded:Connect(function(char)
     enableGodMode()
 end)
 
--- // ESP لأطراف اللاعبين
-local function createESP(targetPlayer)
+-- // دالة لون Rainbow
+local function getRainbowColor()
+    local hue = (tick() % 5) / 5 -- كل ثانية يتغير
+    return Color3.fromHSV(hue,1,1)
+end
+
+-- // ESP Rainbow + أسماء اللاعبين 50%
+local function createRainbowESP(targetPlayer)
     if targetPlayer == player then return end
     local targetChar = targetPlayer.Character
     if not targetChar then return end
+
+    local boxes = {}
+    local nameLabel
 
     local function makeESP(part)
         if not part then return end
         local box = Instance.new("BoxHandleAdornment")
         box.Adornee = part
-        box.Color3 = Color3.fromRGB(255,0,0)
         box.Size = part.Size
         box.AlwaysOnTop = true
         box.ZIndex = 10
         box.Parent = part
+        table.insert(boxes, box)
+    end
+
+    local function addName()
+        local head = targetChar:FindFirstChild("Head")
+        if head then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Size = UDim2.new(0,100,0,25)
+            billboard.AlwaysOnTop = true
+            billboard.Adornee = head
+            billboard.Parent = head
+
+            nameLabel = Instance.new("TextLabel", billboard)
+            nameLabel.Size = UDim2.new(1,0,1,0)
+            nameLabel.BackgroundTransparency = 1
+            nameLabel.Text = targetPlayer.Name
+            nameLabel.TextSize = 12 -- 50% حجم أصغر
+            nameLabel.Font = Enum.Font.SourceSansBold
+            nameLabel.TextColor3 = getRainbowColor()
+        end
     end
 
     local function addESP()
@@ -110,6 +138,7 @@ local function createESP(targetPlayer)
                 makeESP(p)
             end
         end
+        addName()
     end
 
     addESP()
@@ -117,15 +146,27 @@ local function createESP(targetPlayer)
         targetChar = char
         addESP()
     end)
+
+    -- تحديث اللون كل فريم
+    RunService.RenderStepped:Connect(function()
+        for _,b in pairs(boxes) do
+            b.Color3 = getRainbowColor()
+        end
+        if nameLabel then
+            nameLabel.TextColor3 = getRainbowColor()
+        end
+    end)
 end
 
-for _, p in pairs(Players:GetPlayers()) do
-    createESP(p)
+-- تطبيق على كل اللاعبين الحاليين
+for _,p in pairs(Players:GetPlayers()) do
+    createRainbowESP(p)
 end
 
+-- تطبيق على أي لاعب ينضم لاحقاً
 Players.PlayerAdded:Connect(function(p)
     p.CharacterAdded:Connect(function()
-        createESP(p)
+        createRainbowESP(p)
     end)
 end)
 
