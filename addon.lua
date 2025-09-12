@@ -195,10 +195,11 @@ serverBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Heartbeat لمضاد ضرب
-local hoverHeight = 16
-local hoverTime = 0.57
-local riseSpeed = 37
-local fallSpeed = 41   -- سرعة الهبوط أسرع
+local hoverHeight =13
+local hoverTime = 0.50
+local groundTime = 0.11
+local riseSpeed = 50
+local fallSpeed = 40   -- سرعة الهبوط أسرع
 
 local ascending = true
 local startY = hrp.Position.Y
