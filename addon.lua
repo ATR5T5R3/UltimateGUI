@@ -169,24 +169,11 @@ vflyBtn.TextScaled = true
 vflyBtn.TextColor3 = Color3.fromRGB(255,255,255)
 vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
 
-local hoverHeight = 12.50
-local hoverTime = 0.50
-local groundTime = 0.10
-local riseSpeed = 50
-local fallSpeed = 40
-local ascending = true
-local startY = hrp.Position.Y
-local targetY = startY + hoverHeight
-local hoverStart = 0
-local vflyEnabled = false
-
--- عداد بصري أسفل الزر (مخفي افتراضيًا)
 local timerLabel = Instance.new("TextLabel", antiFrame)
 timerLabel.Size = UDim2.new(0.8,0,0,20)
 timerLabel.Position = UDim2.new(0.1,0,0.55,0)
 timerLabel.BackgroundColor3 = Color3.fromRGB(0,255,0)
 timerLabel.TextColor3 = Color3.fromRGB(0,0,0)
-timerLabel.Text = ""
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextScaled = true
 timerLabel.Visible = false
@@ -196,36 +183,52 @@ cooldownLabel.Size = UDim2.new(0.8,0,0,20)
 cooldownLabel.Position = UDim2.new(0.1,0,0.75,0)
 cooldownLabel.BackgroundColor3 = Color3.fromRGB(255,0,0)
 cooldownLabel.TextColor3 = Color3.fromRGB(0,0,0)
-cooldownLabel.Text = ""
 cooldownLabel.Font = Enum.Font.SourceSansBold
 cooldownLabel.TextScaled = true
 cooldownLabel.Visible = false
 
-vflyBtn.MouseButton1Click:Connect(function()
-    if vflyEnabled then return end
-    vflyEnabled = true
-    timerLabel.Visible = true
-    vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
+local hoverHeight = 12.5
+local hoverTime = 0.50
+local groundTime = 0.15
+local riseSpeed = 45
+local fallSpeed = 50
+local ascending = true
+local startY = hrp.Position.Y
+local targetY = startY + hoverHeight
+local hoverStart = 0
 
-    -- العد التنازلي 7 ثواني
-    local countdown = 7
-    task.spawn(function()
-        while countdown > 0 do
-            timerLabel.Text = tostring(countdown).."s"
-            task.wait(1)
-            countdown = countdown -1
-        end
-        -- نهاية الوقت، تفعيل الموقت الثاني 1 ثانية
-        timerLabel.Visible = false
-        timerLabel.Text = ""
-        cooldownLabel.Visible = true
-        cooldownLabel.Text = "انتظر..."
-        task.wait(1)
-        cooldownLabel.Visible = false
-        cooldownLabel.Text = ""
-        vflyEnabled = false
-        vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
-    end)
+local vflyEnabled = false
+local cooldownActive = false
+
+vflyBtn.MouseButton1Click:Connect(function()
+    if vflyEnabled or cooldownActive then return end
+
+    -- المضاد يعمل لمدة 5.3 ثانية
+    vflyEnabled = true
+    vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
+    timerLabel.Visible = true
+
+    local countdown = 5.3
+    while countdown > 0 do
+        timerLabel.Text = string.format("%.1f", countdown).."s"
+        task.wait(0.1)
+        countdown = countdown - 0.1
+    end
+
+    -- نهاية العد: توقف المضاد، يظهر المؤقت الثاني 1 ثانية
+    vflyEnabled = false
+    timerLabel.Visible = false
+    timerLabel.Text = ""
+
+    cooldownActive = true
+    cooldownLabel.Visible = true
+    cooldownLabel.Text = "اصبر..."
+    vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
+
+    task.wait(1) -- ثانية واحدة
+    cooldownActive = false
+    cooldownLabel.Visible = false
+    cooldownLabel.Text = ""
 end)
 
 -- زر تغيير السيرفر
