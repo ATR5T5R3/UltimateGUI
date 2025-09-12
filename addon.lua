@@ -42,7 +42,7 @@ button.TextColor3 = Color3.fromRGB(255,0,0)
 button.Font = Enum.Font.SourceSansBold
 button.TextSize = 18
 
--- // منطق الزر
+-- // منطق invis
 local fakePart
 local function moveSmooth(targetPos)
     local steps = 20
@@ -94,21 +94,36 @@ player.CharacterAdded:Connect(function(char)
     enableGodMode()
 end)
 
--- // ESP للاعبين
+-- // ESP لأطراف اللاعبين
 local function createESP(targetPlayer)
     if targetPlayer == player then return end
     local targetChar = targetPlayer.Character
     if not targetChar then return end
-    local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
-    if not targetHRP then return end
 
-    local box = Instance.new("BoxHandleAdornment")
-    box.Adornee = targetHRP
-    box.Color3 = Color3.fromRGB(255,0,0)
-    box.Size = Vector3.new(2,3,1)
-    box.AlwaysOnTop = true
-    box.ZIndex = 10
-    box.Parent = targetHRP
+    local function makeESP(part)
+        if not part then return end
+        local box = Instance.new("BoxHandleAdornment")
+        box.Adornee = part
+        box.Color3 = Color3.fromRGB(255,0,0)
+        box.Size = part.Size
+        box.AlwaysOnTop = true
+        box.ZIndex = 10
+        box.Parent = part
+    end
+
+    local function addESP()
+        for _,p in pairs(targetChar:GetChildren()) do
+            if p:IsA("BasePart") then
+                makeESP(p)
+            end
+        end
+    end
+
+    addESP()
+    targetPlayer.CharacterAdded:Connect(function(char)
+        targetChar = char
+        addESP()
+    end)
 end
 
 for _, p in pairs(Players:GetPlayers()) do
@@ -127,8 +142,8 @@ local antiGui = Instance.new("ScreenGui", player.PlayerGui)
 antiGui.ResetOnSpawn = false
 
 local antiFrame = Instance.new("Frame", antiGui)
-antiFrame.Size = UDim2.new(0,160,0,120)
-antiFrame.Position = UDim2.new(0.7,0,0.5,-60)
+antiFrame.Size = UDim2.new(0,160,0,160)
+antiFrame.Position = UDim2.new(0.7,0,0.5,-80)
 antiFrame.BackgroundColor3 = Color3.fromRGB(0,0,0)
 antiFrame.BorderColor3 = Color3.fromRGB(255,0,0)
 antiFrame.BorderSizePixel = 2
@@ -154,23 +169,69 @@ vflyBtn.TextScaled = true
 vflyBtn.TextColor3 = Color3.fromRGB(255,255,255)
 vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
 
+local hoverHeight = 12.50
+local hoverTime = 0.50
+local groundTime = 0.10
+local riseSpeed = 50
+local fallSpeed = 40
+local ascending = true
+local startY = hrp.Position.Y
+local targetY = startY + hoverHeight
+local hoverStart = 0
 local vflyEnabled = false
-local vflySpeed = 37
+
+-- عداد بصري أسفل الزر (مخفي افتراضيًا)
+local timerLabel = Instance.new("TextLabel", antiFrame)
+timerLabel.Size = UDim2.new(0.8,0,0,20)
+timerLabel.Position = UDim2.new(0.1,0,0.55,0)
+timerLabel.BackgroundColor3 = Color3.fromRGB(0,255,0)
+timerLabel.TextColor3 = Color3.fromRGB(0,0,0)
+timerLabel.Text = ""
+timerLabel.Font = Enum.Font.SourceSansBold
+timerLabel.TextScaled = true
+timerLabel.Visible = false
+
+local cooldownLabel = Instance.new("TextLabel", antiFrame)
+cooldownLabel.Size = UDim2.new(0.8,0,0,20)
+cooldownLabel.Position = UDim2.new(0.1,0,0.75,0)
+cooldownLabel.BackgroundColor3 = Color3.fromRGB(255,0,0)
+cooldownLabel.TextColor3 = Color3.fromRGB(0,0,0)
+cooldownLabel.Text = ""
+cooldownLabel.Font = Enum.Font.SourceSansBold
+cooldownLabel.TextScaled = true
+cooldownLabel.Visible = false
 
 vflyBtn.MouseButton1Click:Connect(function()
-    vflyEnabled = not vflyEnabled
-    -- الاسم ثابت، لا تغيير عند التفعيل/الإيقاف
-    if vflyEnabled then
-        vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
-    else
+    if vflyEnabled then return end
+    vflyEnabled = true
+    timerLabel.Visible = true
+    vflyBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
+
+    -- العد التنازلي 7 ثواني
+    local countdown = 7
+    task.spawn(function()
+        while countdown > 0 do
+            timerLabel.Text = tostring(countdown).."s"
+            task.wait(1)
+            countdown = countdown -1
+        end
+        -- نهاية الوقت، تفعيل الموقت الثاني 1 ثانية
+        timerLabel.Visible = false
+        timerLabel.Text = ""
+        cooldownLabel.Visible = true
+        cooldownLabel.Text = "انتظر..."
+        task.wait(1)
+        cooldownLabel.Visible = false
+        cooldownLabel.Text = ""
+        vflyEnabled = false
         vflyBtn.BackgroundColor3 = Color3.fromRGB(255,0,0)
-    end
+    end)
 end)
 
 -- زر تغيير السيرفر
 local serverBtn = Instance.new("TextButton", antiFrame)
 serverBtn.Size = UDim2.new(0.8,0,0,30)
-serverBtn.Position = UDim2.new(0.1,0,0.65,0)
+serverBtn.Position = UDim2.new(0.1,0,0.85,0)
 serverBtn.Text = "تغيير سيرفر"
 serverBtn.Font = Enum.Font.SourceSansBold
 serverBtn.TextScaled = true
@@ -194,18 +255,7 @@ serverBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Heartbeat لمضاد ضرب
-local hoverHeight =13
-local hoverTime = 0.50
-local groundTime = 0.11
-local riseSpeed = 50
-local fallSpeed = 40   -- سرعة الهبوط أسرع
-
-local ascending = true
-local startY = hrp.Position.Y
-local targetY = startY + hoverHeight
-local hoverStart = 0
-
+-- Heartbeat لمضاد ضرب مع الانتظار على الأرض
 RunService.Heartbeat:Connect(function(dt)
     if character and hrp and vflyEnabled then
         local pos = hrp.Position
@@ -223,9 +273,13 @@ RunService.Heartbeat:Connect(function(dt)
                 local newY = math.max(pos.Y - fallSpeed*dt, startY)
                 hrp.CFrame = CFrame.new(pos.X,newY,pos.Z)
                 if newY <= startY+0.1 then
-                    ascending = true
-                    startY = hrp.Position.Y
-                    targetY = startY + hoverHeight
+                    task.spawn(function()
+                        task.wait(groundTime)
+                        ascending = true
+                        startY = hrp.Position.Y
+                        targetY = startY + hoverHeight
+                        hoverStart = tick() - hoverTime
+                    end)
                 end
             end
         end
