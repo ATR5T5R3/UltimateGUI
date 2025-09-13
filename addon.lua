@@ -66,7 +66,7 @@ local function run99Nights()
     label.Font = Enum.Font.SourceSansBold
     label.TextScaled = true
     label.TextColor3 = Color3.new(1,1,1)
-    label.Text = "جار التجميع..\nN60 Hub افضل سكربت\nلاتنسى تشرفها ديس\nhttps://discord.gg/wczEq8yg"
+    label.Text = "جار التجميع..\nN60 Hub افضل سكربت\nلاتنسى تشرفنا ديس\nhttps://discord.gg/wczEq8yg"
     label.Parent = frame
 
     local success, err = pcall(function()
