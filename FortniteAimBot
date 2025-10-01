@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>اختار الايم</title>
+  <style>
+    :root{
+      --bg:#0f1720;
+      --card:#0b1220;
+      --accent:#10b981; /* أخضر */
+      --danger:#ef4444; /* أحمر */
+      --text:#e6eef6;
+      --muted:#9aa6b2;
+    }
+    *{box-sizing:border-box;font-family: "Tajawal", system-ui, Arial, sans-serif}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg,#071023 0%, #0c1724 100%);
+      color:var(--text);
+      padding:20px;
+    }
+    .card{
+      width:360px;
+      max-width:95%;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      border-radius:14px;
+      padding:20px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    }
+    .title{
+      font-size:20px;
+      font-weight:700;
+      margin-bottom:10px;
+      text-align:center;
+    }
+    .subtitle{
+      font-size:13px;
+      color:var(--muted);
+      text-align:center;
+      margin-bottom:18px;
+    }
+
+    /* Aim assist row */
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .label{
+      font-size:15px;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .numbox{
+      min-width:70px;
+      text-align:center;
+      padding:10px 12px;
+      border-radius:10px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.03);
+      font-weight:700;
+      font-size:18px;
+    }
+    .btn{
+      width:44px;
+      height:44px;
+      border-radius:10px;
+      display:inline-grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      font-size:20px;
+      font-weight:700;
+      border:1px solid rgba(255,255,255,0.04);
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+    }
+    .btn:active{transform:translateY(1px)}
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      text-align:center;
+      margin-bottom:12px;
+    }
+
+    /* Toggle */
+    .toggle-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.01);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .toggle-label{display:flex;flex-direction:column;gap:4px}
+    .toggle-label .name{font-weight:700}
+    .toggle-label .state{font-size:13px;color:var(--muted)}
+    .switch{
+      width:70px;
+      height:36px;
+      background:var(--danger);
+      border-radius:999px;
+      padding:4px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+      transition:background .18s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+    .switch .dot{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      background:#071622;
+      display:inline-block;
+      transform:translateX(0);
+      transition:transform .18s ease, background .18s;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .switch.on{background:var(--accent)}
+    .switch.on .dot{transform:translateX(34px); background:#e6fdf3}
+
+    /* footer small */
+    .foot{margin-top:14px;text-align:center;color:var(--muted);font-size:12px}
+    /* responsive tweak */
+    @media (max-width:420px){
+      .card{padding:14px}
+      .btn{width:40px;height:40px}
+      .numbox{min-width:62px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="اختار الايم">
+    <div class="title">اختار الايم</div>
+    <div class="subtitle">ضبط إعدادات الـ Aim assist و كشف اللاعبين</div>
+
+    <div class="row" aria-hidden="false">
+      <div class="label">Aim assist</div>
+      <div class="controls" role="group" aria-label="Aim assist controls">
+        <button class="btn" id="dec" title="نقص">−</button>
+        <div class="numbox" id="aimValue" aria-live="polite">50</div>
+        <button class="btn" id="inc" title="زود">+</button>
+      </div>
+    </div>
+
+    <div class="small">اضغط + لزيادة الرقم و − للنقصان. (يمكن تعديل الحد الأدنى/الأقصى بالشفرة)</div>
+
+    <div class="toggle-row" role="group" aria-label="كشف لاعبين">
+      <div class="toggle-label">
+        <div class="name">⭕️ كشف لاعبين</div>
+        <div class="state" id="toggleState">Off</div>
+      </div>
+      <div class="switch" id="toggle" role="switch" aria-checked="false" tabindex="0">
+        <div class="dot" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="foot">تم التصميم ليتوافق مع العربية (RTL). احفظ الصفحة وافتحها لتجرب.</div>
+  </div>
+
+  <script>
+    // عناصر
+    const aimEl = document.getElementById('aimValue');
+    const incBtn = document.getElementById('inc');
+    const decBtn = document.getElementById('dec');
+    const toggle = document.getElementById('toggle');
+    const toggleState = document.getElementById('toggleState');
+
+    // إعدادات قابلة للتعديل
+    const MIN_AIM = 0;
+    const MAX_AIM = 999;
+    const STEP = 1;
+
+    // استرجاع حالة لو متخزنة
+    let aim = Number(localStorage.getItem('aim_value') ?? 50);
+    let playersDetect = (localStorage.getItem('players_detect') === '1') ? true : false;
+
+    function renderAim(){
+      aim = Math.min(MAX_AIM, Math.max(MIN_AIM, Math.round(aim)));
+      aimEl.textContent = aim;
+      localStorage.setItem('aim_value', aim);
+    }
+
+    function renderToggle(){
+      if(playersDetect){
+        toggle.classList.add('on');
+        toggleState.textContent = 'On';
+        toggleState.style.color = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+        toggle.setAttribute('aria-checked','true');
+        localStorage.setItem('players_detect','1');
+      } else {
+        toggle.classList.remove('on');
+        toggleState.textContent = 'Off';
+        toggleState.style.color = getComputedStyle(document.documentElement).getPropertyValue('--danger');
+        toggle.setAttribute('aria-checked','false');
+        localStorage.setItem('players_detect','0');
+      }
+      // لضمان أن لون الخلفية للـ switch يتغير تلقائياً عبر CSS .on class
+    }
+
+    // أحداث الأزرار
+    incBtn.addEventListener('click', ()=>{
+      aim += STEP; renderAim();
+    });
+    decBtn.addEventListener('click', ()=>{
+      aim -= STEP; renderAim();
+    });
+
+    // تبديل بالكلام أو بالكيبورد
+    function toggleSwitch(){
+      playersDetect = !playersDetect;
+      renderToggle();
+    }
+
+    toggle.addEventListener('click', toggleSwitch);
+    toggle.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        toggleSwitch();
+      }
+    });
+
+    // شغّل العرض الأولي
+    renderAim();
+    renderToggle();
+
+    // ميزة: ضغط مطوّل لزيادة/نقص أسرع
+    let incHold, decHold;
+    incBtn.addEventListener('mousedown', ()=>{ incHold = setInterval(()=>{ aim+=STEP; renderAim(); }, 120); });
+    incBtn.addEventListener('mouseup', ()=>{ clearInterval(incHold); });
+    incBtn.addEventListener('mouseleave', ()=>{ clearInterval(incHold); });
+    decBtn.addEventListener('mousedown', ()=>{ decHold = setInterval(()=>{ aim-=STEP; renderAim(); }, 120); });
+    decBtn.addEventListener('mouseup', ()=>{ clearInterval(decHold); });
+    decBtn.addEventListener('mouseleave', ()=>{ clearInterval(decHold); });
+
+    // للمسات على الموبايل (touch)
+    incBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); incHold = setInterval(()=>{ aim+=STEP; renderAim(); }, 120); });
+    incBtn.addEventListener('touchend', ()=>{ clearInterval(incHold); });
+    decBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); decHold = setInterval(()=>{ aim-=STEP; renderAim(); }, 120); });
+    decBtn.addEventListener('touchend', ()=>{ clearInterval(decHold); });
+
+  </script>
+</body>
+</html>
