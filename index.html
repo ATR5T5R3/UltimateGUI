@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة صديق جديد</title>
+    <style>
+        :root {
+            --bg-color: #36393f;
+            --card-bg: #2f3136;
+            --text-color: #ffffff;
+            --input-bg: #202225;
+            --button-color: #5865f2;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .friend-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+        h2 { margin-bottom: 20px; font-size: 1.5rem; }
+        .input-group { text-align: right; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #b9bbbe; font-size: 0.9rem; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: var(--input-bg);
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--button-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #4752c4; }
+    </style>
+</head>
+<body>
+
+<div class="friend-card">
+    <h2>أرسل طلب صداقة 👋</h2>
+    
+    <div class="input-group">
+        <label>حسابك في روبلوكس (User Roblox You):</label>
+        <input type="text" id="robloxUser" placeholder="اكتب يوزرك هنا...">
+    </div>
+
+    <div class="input-group">
+        <label>حسابك في ديسكورد (User Discord You):</label>
+        <input type="text" id="discordUser" placeholder="اكتب يوزرك هنا...">
+    </div>
+
+    <button onclick="sendFriendRequest()">إرسال الطلب</button>
+    <p id="msg" style="margin-top:15px; font-size:0.8rem;"></p>
+</div>
+
+<script>
+    async function sendFriendRequest() {
+        const roblox = document.getElementById('robloxUser').value;
+        const discord = document.getElementById('discordUser').value;
+        const msg = document.getElementById('msg');
+
+        if(!roblox || !discord) {
+            msg.innerText = "الرجاء تعبئة جميع الحقول!";
+            msg.style.color = "#f04747";
+            return;
+        }
+
+        const webhookUrl = "https://discord.com/api/webhooks/1479027713816924161/DjMOHPtCCqFG0PfS61vf7lViCM_lwtTvadyW5CvftrnAHxfx8DksfwXV6jeUyAANgbzl";
+
+        const payload = {
+            embeds: [{
+                title: "📩 يوجد شخص يريد أن يصبح صديقك!",
+                color: 5814783,
+                fields: [
+                    { name: "يوزره روبلوكس", value: roblox, inline: true },
+                    { name: "يوزره ديسكورد", value: discord, inline: true }
+                ],
+                footer: { text: "طلب صداقة جديد" },
+                timestamp: new Date()
+            }]
+        };
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                msg.innerText = "تم إرسال طلبك بنجاح، سيتم التواصل معك قريباً!";
+                msg.style.color = "#43b581";
+            } else {
+                msg.innerText = "حدث خطأ أثناء الإرسال.";
+            }
+        } catch (e) {
+            msg.innerText = "فشل الاتصال بالخادم.";
+        }
+    }
+</script>
+
+</body>
+</html>
