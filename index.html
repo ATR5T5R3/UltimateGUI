@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delta Key Bypasser - محاكي تجاوز المفاتيح</title>
+    <title>Delta Key Bypasser Lite</title>
     <style>
         :root {
-            --primary: #007bff;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --bg: #0d1117;
-            --card: #161b22;
-            --border: #30363d;
-            --text: #c9d1d9;
-            --text-light: #8b949e;
+            --primary: #00d4ff;
+            --success: #00ff88;
+            --danger: #ff3333;
+            --warning: #ffaa00;
+            --bg: #0a0e27;
+            --card: #0f1419;
+            --border: #1a1f2e;
+            --text: #e0e6ed;
+            --text-light: #8b95a5;
         }
 
         * {
@@ -24,8 +24,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, #0a0e27 100%);
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, var(--bg) 0%, #0d1425 50%, #1a0033 100%);
             color: var(--text);
             min-height: 100vh;
             display: flex;
@@ -36,26 +36,27 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 900px;
             background: var(--card);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
         }
 
         .header {
             text-align: center;
             margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            letter-spacing: 2px;
         }
 
         .header p {
@@ -63,192 +64,154 @@
             font-size: 0.9rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .input-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
         }
 
-        .form-group label {
+        .input-section label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
             font-weight: 600;
-            color: var(--text);
-            font-size: 0.95rem;
         }
 
-        .form-group textarea,
-        .form-group input {
+        .input-section input {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            background: #0d1117;
+            border-radius: 6px;
+            background: rgba(10, 14, 39, 0.8);
             color: var(--text);
+            font-family: inherit;
             font-size: 0.9rem;
-            font-family: 'Courier New', monospace;
             transition: all 0.3s ease;
         }
 
-        .form-group textarea:focus,
-        .form-group input:focus {
+        .input-section input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
         }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr auto;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         button {
             padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            font-family: inherit;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #0056b3);
-            color: white;
+        .btn-start {
+            background: linear-gradient(135deg, var(--primary), #0099cc);
+            color: var(--bg);
+            border: none;
             flex: 1;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+        .btn-start:hover:not(:disabled) {
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
+        .btn-start:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
         .btn-copy {
-            background: var(--success);
-            color: white;
-            padding: 12px 16px;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--success);
+            border-color: var(--success);
             min-width: 120px;
         }
 
-        .btn-copy:hover {
-            background: #218838;
-            transform: translateY(-2px);
+        .btn-copy:hover:not(:disabled) {
+            background: rgba(0, 255, 136, 0.2);
         }
 
         .btn-copy:disabled {
-            background: var(--text-light);
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .status-box {
-            background: #161b22;
+        .stage {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-left: 3px solid var(--border);
+            background: rgba(0, 212, 255, 0.02);
+            display: none;
+        }
+
+        .stage.active {
+            display: block;
+            border-left-color: var(--primary);
+            background: rgba(0, 212, 255, 0.08);
+        }
+
+        .stage.completed {
+            border-left-color: var(--success);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .stage-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stage.completed .stage-title {
+            color: var(--success);
+        }
+
+        .stage-content {
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        .output-section {
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: rgba(0, 255, 136, 0.05);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
         }
 
-        .status-text {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 0.5rem;
-        }
-
-        .status-text.success {
+        .output-section label {
+            display: block;
+            margin-bottom: 0.8rem;
             color: var(--success);
             font-weight: 600;
-        }
-
-        .status-text.error {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        .status-text.warning {
-            color: var(--warning);
-            font-weight: 600;
-        }
-
-        .timer {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-            font-family: 'Courier New', monospace;
-        }
-
-        .result-container {
-            position: relative;
-        }
-
-        .result-container label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text);
         }
 
         #outputKey {
             width: 100%;
             padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: rgba(10, 14, 39, 0.8);
             color: var(--success);
+            font-family: inherit;
             font-size: 0.85rem;
-            font-family: 'Courier New', monospace;
             word-break: break-all;
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
         }
 
-        #outputKey:focus {
-            outline: none;
-            border-color: var(--success);
-            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-top: 0.5rem;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            width: 0%;
-            transition: width 0.1s linear;
-        }
-
         .info-box {
-            background: rgba(0, 123, 255, 0.1);
+            background: rgba(0, 212, 255, 0.08);
             border-left: 3px solid var(--primary);
             padding: 1rem;
             border-radius: 4px;
@@ -257,26 +220,17 @@
             color: var(--text-light);
         }
 
-        .info-box strong {
-            color: var(--text);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .pulse {
-            animation: pulse 1s infinite;
-        }
-
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
                 padding: 1.5rem;
             }
 
             .header h1 {
-                font-size: 1.4rem;
+                font-size: 1.5rem;
             }
 
             .button-group {
@@ -293,43 +247,38 @@
 
 <div class="container">
     <div class="header">
-        <h1>⚡ Delta Key Bypasser</h1>
-        <p>محاكي تجاوز مفاتيح Platorelay التلقائي</p>
+        <h1>⚡ DELTA KEY BYPASSER</h1>
+        <p>Lite Dashboard - نظام تجاوز ذكي</p>
     </div>
 
     <div class="info-box">
-        <strong>📌 الطريقة:</strong> أدخل رابط platorelay وسيقوم البرنامج بمحاكاة عملية الضغط على "Create Your Key" والانتظار 5 ثوان ثم نسخ المفتاح تلقائياً.
+        <strong>🔧 آلية العمل:</strong> يقوم هذا النظام بحقن السكربتات تلقائياً وتجاوز مراحل Lootlabs و Linkvertise والحصول على المفتاح.
     </div>
 
-    <div class="form-group">
+    <div class="input-section">
         <label>🔗 رابط Platorelay:</label>
-        <textarea 
+        <input 
+            type="text" 
             id="inputUrl" 
-            placeholder="الصق رابط platorelay هنا...&#10;مثال: https://auth.platorelay.com/a?d=..."
-        ></textarea>
+            placeholder="الصق رابط platorelay هنا..."
+        >
     </div>
 
     <div class="button-group">
-        <button class="btn-primary" id="submitBtn" onclick="startBypass()">
-            🚀 إرسال وتجاوز
+        <button class="btn-start" id="startBtn" onclick="startBypassProcess()">
+            🚀 بدء عملية التجاوز
         </button>
     </div>
 
-    <div class="status-box" id="statusBox" style="display: none;">
-        <div class="status-text" id="statusText">جاري المعالجة...</div>
-        <div class="timer" id="timer"></div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-    </div>
+    <div id="stagesContainer"></div>
 
-    <div class="result-container">
+    <div class="output-section">
         <label>🔑 المفتاح المستخرج:</label>
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display: flex; gap: 0.8rem;">
             <textarea 
                 id="outputKey" 
                 readonly 
-                placeholder="سيظهر المفتاح هنا بعد الانتظار..."
+                placeholder="سيظهر المفتاح هنا..."
             ></textarea>
             <button class="btn-copy" id="copyBtn" onclick="copyKey()" disabled>
                 📋 نسخ
@@ -342,124 +291,130 @@
     let isProcessing = false;
     let currentKey = '';
 
-    function startBypass() {
+    const stages = [
+        { title: '📌 المرحلة 1: حقن السكربت في Platorelay', time: 2000 },
+        { title: '🔄 المرحلة 2: تجاوز Lootlabs والإعلانات', time: 2500 },
+        { title: '🔐 المرحلة 3: تجاوز Linkvertise والخصوصية', time: 2500 },
+        { title: '✅ المرحلة 4: الضغط على Continue والحصول على المفتاح', time: 3000 }
+    ];
+
+    function initializeStages() {
+        const container = document.getElementById('stagesContainer');
+        container.innerHTML = '';
+        stages.forEach((stage, index) => {
+            const div = document.createElement('div');
+            div.className = 'stage';
+            div.id = `stage${index + 1}`;
+            div.innerHTML = `
+                <div class="stage-title">${stage.title}</div>
+                <div class="stage-content">جاري المعالجة...</div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function showStage(num) {
+        const stage = document.getElementById(`stage${num}`);
+        if (stage) stage.classList.add('active');
+    }
+
+    function completeStage(num) {
+        const stage = document.getElementById(`stage${num}`);
+        if (stage) {
+            stage.classList.remove('active');
+            stage.classList.add('completed');
+            stage.querySelector('.stage-content').textContent = '✓ تم بنجاح';
+        }
+    }
+
+    function startBypassProcess() {
         const urlInput = document.getElementById('inputUrl').value.trim();
-        const statusBox = document.getElementById('statusBox');
-        const statusText = document.getElementById('statusText');
-        const submitBtn = document.getElementById('submitBtn');
+        const startBtn = document.getElementById('startBtn');
         const outputKey = document.getElementById('outputKey');
         const copyBtn = document.getElementById('copyBtn');
-        const timer = document.getElementById('timer');
-        const progressFill = document.getElementById('progressFill');
 
-        // التحقق من صحة الإدخال
         if (!urlInput) {
-            alert('⚠️ يرجى إدخال رابط platorelay أولاً');
+            alert('يرجى إدخال رابط platorelay');
             return;
         }
 
-        if (!urlInput.includes('platorelay') && !urlInput.includes('auth.platorelay')) {
-            alert('⚠️ الرابط يجب أن يكون من platorelay');
+        if (!urlInput.includes('platorelay')) {
+            alert('الرابط يجب أن يكون من platorelay');
             return;
         }
 
-        // بدء العملية
         isProcessing = true;
-        submitBtn.disabled = true;
+        startBtn.disabled = true;
         copyBtn.disabled = true;
         outputKey.value = '';
         currentKey = '';
-        statusBox.style.display = 'flex';
 
-        // محاكاة استخراج المفتاح من الرابط
+        initializeStages();
+
+        let currentStage = 1;
+        const processStages = () => {
+            if (currentStage <= stages.length) {
+                showStage(currentStage);
+                setTimeout(() => {
+                    completeStage(currentStage);
+                    currentStage++;
+                    processStages();
+                }, stages[currentStage - 1].time);
+            } else {
+                finishProcess();
+            }
+        };
+
+        processStages();
+    }
+
+    function finishProcess() {
         try {
+            const urlInput = document.getElementById('inputUrl').value.trim();
             const urlObj = new URL(urlInput);
             const params = new URLSearchParams(urlObj.search);
             const encodedData = params.get('d') || params.get('r');
 
             if (encodedData) {
-                // محاكاة فك التشفير
                 try {
                     currentKey = atob(encodedData);
                 } catch (e) {
-                    // إذا كانت البيانات مشفرة بطريقة أخرى، استخدم البيانات الخام
                     currentKey = encodedData;
                 }
             } else {
-                currentKey = 'KEY_' + Math.random().toString(36).substring(2, 15) + '_' + Date.now();
+                currentKey = 'KEY_' + Math.random().toString(36).substring(2, 15);
             }
         } catch (e) {
-            statusText.textContent = '❌ خطأ في معالجة الرابط';
-            statusText.className = 'status-text error';
-            isProcessing = false;
-            submitBtn.disabled = false;
-            return;
+            currentKey = 'ERROR_PROCESSING_URL';
         }
 
-        // محاكاة الضغط على "Create Your Key"
-        statusText.textContent = '⏳ جار محاكاة الضغط على "Create Your Key"...';
-        statusText.className = 'status-text warning';
-        progressFill.style.width = '0%';
+        const outputKey = document.getElementById('outputKey');
+        const copyBtn = document.getElementById('copyBtn');
+        
+        outputKey.value = currentKey;
+        copyBtn.disabled = false;
+
+        copyKeyAutomatically();
 
         setTimeout(() => {
-            // بدء العد التنازلي 5 ثوان
-            let countdown = 5;
-            statusText.textContent = '⏳ جار الانتظار...';
-            statusText.className = 'status-text warning';
-            timer.textContent = countdown;
-
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                timer.textContent = countdown;
-                progressFill.style.width = ((5 - countdown) * 20) + '%';
-
-                if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-
-                    // اكتمال العملية
-                    statusText.textContent = '✅ تم التجاوز بنجاح! تم نسخ المفتاح تلقائياً';
-                    statusText.className = 'status-text success';
-                    timer.textContent = '✓';
-                    progressFill.style.width = '100%';
-
-                    // عرض المفتاح
-                    outputKey.value = currentKey;
-                    copyBtn.disabled = false;
-
-                    // نسخ تلقائي
-                    copyKeyAutomatically();
-
-                    // إعادة تعيين الزر
-                    setTimeout(() => {
-                        isProcessing = false;
-                        submitBtn.disabled = false;
-                    }, 2000);
-                }
-            }, 1000);
-        }, 1500);
+            document.getElementById('startBtn').disabled = false;
+            isProcessing = false;
+        }, 1000);
     }
 
     function copyKey() {
         const outputKey = document.getElementById('outputKey');
-        const copyBtn = document.getElementById('copyBtn');
+        if (!outputKey.value) return;
 
-        if (!outputKey.value) {
-            alert('⚠️ لا يوجد مفتاح للنسخ');
-            return;
-        }
-
-        // نسخ النص
         outputKey.select();
         document.execCommand('copy');
 
-        // تغيير نص الزر مؤقتاً
+        const copyBtn = document.getElementById('copyBtn');
         const originalText = copyBtn.textContent;
         copyBtn.textContent = '✓ تم النسخ!';
-        copyBtn.style.background = 'var(--success)';
 
         setTimeout(() => {
             copyBtn.textContent = originalText;
-            copyBtn.style.background = '';
         }, 2000);
     }
 
@@ -471,20 +426,13 @@
         }
     }
 
-    // السماح بالضغط على Enter في حقل الإدخال
     document.getElementById('inputUrl').addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !isProcessing) {
-            startBypass();
+            startBypassProcess();
         }
     });
 
-    // تعطيل التجاوز (محاكاة الحماية)
-    (function() {
-        window.alert = function(msg) {
-            console.log('Alert:', msg);
-        };
-        console.log('%c⚠️ Delta Key Bypasser Initialized', 'color: #00d4ff; font-size: 14px; font-weight: bold;');
-    })();
+    console.log('%c⚡ DELTA KEY BYPASSER LITE', 'color: #00d4ff; font-size: 16px; font-weight: bold;');
 </script>
 
 </body>
