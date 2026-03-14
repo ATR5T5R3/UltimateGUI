@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta Key Bypasser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-group input::placeholder {
+            color: #bbb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            text-align: center;
+            color: #667eea;
+            font-size: 13px;
+            font-weight: 600;
+            min-height: 20px;
+            margin-bottom: 15px;
+        }
+
+        .output-group {
+            margin-bottom: 20px;
+        }
+
+        .output-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .output-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+
+        .output-group textarea {
+            flex: 1;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            resize: none;
+            height: 60px;
+            background: #f8f9fa;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .output-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn-copy {
+            padding: 14px 16px;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-copy:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn-copy:active {
+            transform: scale(0.95);
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #e0e0e0;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 Delta Key Bypasser</h1>
+            <p>تجاوز مفاتيح Delta بسهولة وسرعة</p>
+        </div>
+
+        <div class="input-group">
+            <label for="keyInput">ضع مفتاحك هنا</label>
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="keyInput" 
+                    placeholder="مثال: FREE_c1c5b56de76725157ef8165205f5f43d"
+                    autocomplete="off"
+                >
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-submit" id="submitBtn" onclick="processKey()">
+                <span id="btnText">إرسال</span>
+            </button>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <div class="output-group">
+            <label for="keyOutput">المفتاح المعالج</label>
+            <div class="output-wrapper">
+                <textarea 
+                    id="keyOutput" 
+                    readonly
+                    placeholder="سيظهر المفتاح المعالج هنا..."
+                ></textarea>
+                <button class="btn-copy" id="copyBtn" onclick="copyToClipboard()" title="نسخ المفتاح">
+                    📋
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const keyInput = document.getElementById('keyInput');
+        const keyOutput = document.getElementById('keyOutput');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const copyBtn = document.getElementById('copyBtn');
+        const btnText = document.getElementById('btnText');
+
+        // تفعيل زر الإرسال عند الكتابة
+        keyInput.addEventListener('input', () => {
+            submitBtn.disabled = keyInput.value.trim() === '';
+        });
+
+        // السماح بالضغط على Enter
+        keyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !submitBtn.disabled) {
+                processKey();
+            }
+        });
+
+        function processKey() {
+            const inputKey = keyInput.value.trim();
+
+            if (!inputKey) {
+                statusMessage.textContent = '⚠️ يرجى إدخال مفتاح أولاً';
+                statusMessage.style.color = '#ff6b6b';
+                return;
+            }
+
+            // تعطيل الزر وإظهار رسالة التحميل
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span> جارٍ تجاوز المفتاح';
+            statusMessage.textContent = '';
+            keyOutput.value = '';
+
+            // محاكاة معالجة المفتاح (1-2 ثانية)
+            setTimeout(() => {
+                // معالجة المفتاح
+                const processedKey = bypassKey(inputKey);
+                
+                // عرض النتيجة
+                keyOutput.value = processedKey;
+                statusMessage.textContent = '✅ تم معالجة المفتاح بنجاح!';
+                statusMessage.style.color = '#4caf50';
+
+                // إعادة تفعيل الزر
+                submitBtn.disabled = false;
+                btnText.textContent = 'إرسال';
+
+                // تفعيل زر النسخ
+                copyBtn.style.opacity = '1';
+                copyBtn.style.pointerEvents = 'auto';
+            }, 1200);
+        }
+
+        function bypassKey(key) {
+            // دالة تجاوز المفتاح - يمكن تطويرها لاحقاً
+            // حالياً تعيد المفتاح مع إضافة بادئة
+            return `BYPASSED_${key}_${Date.now()}`;
+        }
+
+        function copyToClipboard() {
+            const text = keyOutput.value;
+
+            if (!text) {
+                statusMessage.textContent = '⚠️ لا يوجد مفتاح للنسخ';
+                statusMessage.style.color = '#ff6b6b';
+                return;
+            }
+
+            // نسخ النص
+            navigator.clipboard.writeText(text).then(() => {
+                // إظهار رسالة النجاح
+                const feedback = document.createElement('div');
+                feedback.className = 'copy-feedback';
+                feedback.textContent = '✅ تم نسخ المفتاح بنجاح!';
+                document.body.appendChild(feedback);
+
+                // تغيير لون الزر مؤقتاً
+                copyBtn.style.background = '#4caf50';
+                copyBtn.style.borderColor = '#4caf50';
+                copyBtn.style.color = 'white';
+
+                // إزالة الرسالة بعد 2 ثانية
+                setTimeout(() => {
+                    feedback.remove();
+                    copyBtn.style.background = '#f0f0f0';
+                    copyBtn.style.borderColor = '#e0e0e0';
+                    copyBtn.style.color = '#333';
+                }, 2000);
+            }).catch(() => {
+                statusMessage.textContent = '❌ فشل النسخ، يرجى المحاولة مجدداً';
+                statusMessage.style.color = '#ff6b6b';
+            });
+        }
+
+        // تعطيل الزر في البداية
+        submitBtn.disabled = true;
+    </script>
+</body>
+</html>
